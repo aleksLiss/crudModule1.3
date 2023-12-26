@@ -30,6 +30,36 @@ public class JsonUtil {
     public JsonUtil() {
     }
 
+    public Writer updateWriter(Writer writer){
+        String pathFile = PATH + WRITERDB;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
+            String fromJson = JsonToString(bufferedReader);
+            List<Writer> listWriters = getListWritersFromJson(fromJson, getTypeOfListWriters());
+            try {
+                getWriterById(listWriters, writer.getId());
+                listWriters.stream()
+                        .peek((a) -> {
+                            if (a.getId().equals(writer.getId())) {
+                                a.setFirstName(writer.getFirstName());
+                                a.setLastName(writer.getLastName());
+                                a.setPosts(writer.getPosts());
+                                a.setWriterStatus(writer.getWriterStatus());
+                            }
+                        }).collect(Collectors.toList());
+                try (FileWriter fileWriter = new FileWriter(pathFile)) {
+                    String listWritersToJson = new Gson().toJson(listWriters);
+                    fileWriter.write(listWritersToJson);
+                } catch (IOException e) {
+                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                }
+            } catch (IdNotExistException e) {
+                System.out.println(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
+        }
+        return writer;
+    }
 
     public void deleteWriter(Long id) {
         String pathFile = PATH + WRITERDB;
@@ -160,14 +190,6 @@ public class JsonUtil {
             listWriters = new Gson().fromJson(jsonToString, type);
         }
         return listWriters;
-    }
-
-
-    static class Test {
-        public static void main(String[] args) {
-            JsonUtil j = new JsonUtil();
-
-        }
     }
 
 

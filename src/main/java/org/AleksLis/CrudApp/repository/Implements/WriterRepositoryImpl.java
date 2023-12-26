@@ -27,7 +27,7 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer update(Writer writer) {
-        return null;
+        return jsonUtil.updateWriter(writer);
     }
 
     @Override
