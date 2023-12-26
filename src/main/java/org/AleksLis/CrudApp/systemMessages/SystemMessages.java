@@ -1,4 +1,4 @@
-package org.AleksLis.CrudApp.messages;
+package org.AleksLis.CrudApp.systemMessages;
 
 public enum SystemMessages {
 
