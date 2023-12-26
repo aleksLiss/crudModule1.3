@@ -4,5 +4,11 @@
     "firstName": "vova",
     "lastName": "koka",
     "posts": []
+  },
+  {
+    "id": 2,
+    "firstName": "joja",
+    "lastName": "boja",
+    "posts": []
   }
 ]
