@@ -7,6 +7,7 @@ import org.AleksLis.CrudApp.exceptions.IdNotExistException;
 import org.AleksLis.CrudApp.exceptions.NotExistJsonException;
 import org.AleksLis.CrudApp.messages.SystemMessages;
 import org.AleksLis.CrudApp.model.Post;
+import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.repository.WriterRepository;
 
 import javax.swing.table.TableRowSorter;
@@ -29,31 +30,59 @@ public class JsonUtil {
     public JsonUtil() {
     }
 
-    public List<Writer> getAll(){
+
+    public void deleteWriter(Long id) {
+        String pathFile = PATH + WRITERDB;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
+            String fromJson = JsonToString(bufferedReader);
+            List<Writer> listWriters = getListWritersFromJson(fromJson, getTypeOfListWriters());
+            try {
+                getWriterById(listWriters, id);
+                listWriters.stream()
+                        .peek((a) -> {
+                            if (a.getId().equals(id)) {
+                                a.setWriterStatus(StatusEntity.DELETE);
+                            }
+                        }).collect(Collectors.toList());
+                try (FileWriter fileWriter = new FileWriter(pathFile)) {
+                    String listWritersToJson = new Gson().toJson(listWriters);
+                    fileWriter.write(listWritersToJson);
+                } catch (IOException e) {
+                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                }
+            } catch (IdNotExistException e) {
+                System.out.println(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
+        }
+    }
+
+    public List<Writer> getAll() {
         String pathFile = PATH + WRITERDB;
         List<Writer> listWriters = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))){
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = JsonToString(bufferedReader);
             listWriters = getListWritersFromJson(fromJson, getTypeOfListWriters());
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
         return listWriters;
     }
 
 
-    public Writer getWriter(Long id){
+    public Writer getWriter(Long id) {
         Writer writer = null;
         String pathFile = PATH + WRITERDB;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))){
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = JsonToString(bufferedReader);
             List<Writer> listWriters = getListWritersFromJson(fromJson, getTypeOfListWriters());
             try {
                 writer = getWriterById(listWriters, id);
-            }catch (IdNotExistException e){
+            } catch (IdNotExistException e) {
                 System.out.println(SystemMessages.ID_NOT_EXIST_EX.getMessage());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
         return writer;
@@ -83,21 +112,22 @@ public class JsonUtil {
         return writer;
     }
 
-    private static Writer getWriterById(List<Writer> listWriters, Long id) throws IdNotExistException{
+    private static Writer getWriterById(List<Writer> listWriters, Long id) throws IdNotExistException {
         Writer getWriter;
         List<Writer> result = listWriters.stream()
                 .filter((writer) -> writer.getId().equals(id))
                 .collect(Collectors.toList());
-        if(result.size() != 0){
+        if (result.size() != 0) {
             getWriter = result.get(0);
-        }else {
+        } else {
             throw new IdNotExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
         }
         return getWriter;
     }
 
-    private static Type getTypeOfListWriters(){
-        return new TypeToken<List<Writer>>(){}.getType();
+    private static Type getTypeOfListWriters() {
+        return new TypeToken<List<Writer>>() {
+        }.getType();
     }
 
     private static String JsonToString(BufferedReader bufferedReader) {
@@ -107,7 +137,8 @@ public class JsonUtil {
             while ((current = bufferedReader.readLine()) != null) {
                 result += current;
             }
-        }catch (IOException ignored){}
+        } catch (IOException ignored) {
+        }
         return result;
     }
 
@@ -135,13 +166,10 @@ public class JsonUtil {
     static class Test {
         public static void main(String[] args) {
             JsonUtil j = new JsonUtil();
-            List<Writer> ar = j.getAll();
-            for(Writer writer: ar){
-                System.out.println(writer.getId());
-                System.out.println(writer.getFirstName());
-            }
+
         }
     }
+
 
 
 //    public static Writer getWriterFromJson(String path, Long id) throws EmptyJsonException, NotExistIdException {

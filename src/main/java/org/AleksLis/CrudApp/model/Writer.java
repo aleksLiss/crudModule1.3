@@ -16,4 +16,6 @@ public class Writer {
     private String firstName;
     private String lastName;
     private List<Post> posts;
+    private StatusEntity writerStatus;
+
 }

@@ -9,14 +9,14 @@ import java.util.List;
 public class WriterRepositoryImpl implements WriterRepository {
 
     private JsonUtil jsonUtil;
+
     @Override
     public Writer getById(Long id) {
         return jsonUtil.getWriter(id);
     }
 
     @Override
-    public List<Writer> getAll()
-    {
+    public List<Writer> getAll() {
         return jsonUtil.getAll();
     }
 
@@ -32,6 +32,6 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public void delete(Long id) {
-
+        jsonUtil.deleteWriter(id);
     }
 }

@@ -1,14 +1,30 @@
 [
   {
     "id": 1,
-    "firstName": "vova",
+    "firstName": "goga",
     "lastName": "koka",
-    "posts": []
+    "posts": [],
+    "writerStatus": "ACTIVE"
   },
   {
     "id": 2,
-    "firstName": "joja",
-    "lastName": "boja",
-    "posts": []
+    "firstName": "goga____2",
+    "lastName": "kokaqwd",
+    "posts": [],
+    "writerStatus": "ACTIVE"
+  },
+  {
+    "id": 3,
+    "firstName": "goga____3",
+    "lastName": "kokasdv",
+    "posts": [],
+    "writerStatus": "DELETE"
+  },
+  {
+    "id": 4,
+    "firstName": "goga____4",
+    "lastName": "kokaqwdq",
+    "posts": [],
+    "writerStatus": "ACTIVE"
   }
 ]
