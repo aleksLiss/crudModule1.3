@@ -10,23 +10,33 @@ public class PostService {
     private PostRepository postRepository;
 
 
-    public Post getById(Long id){
+    public Post getById(Long id) {
         return postRepository.getById(id);
-    };
+    }
 
-    public List<Post> getAll(){
+    ;
+
+    public List<Post> getAll() {
         return postRepository.getAll();
-    };
+    }
 
-    public Post savePost(Post post){
-        return postRepository.savePost(post);
-    };
+    ;
 
-    public Post updatePost(Post post){
-        return postRepository.updatePost(post);
-    };
+    public Post savePost(Post post) {
+        return postRepository.save(post);
+    }
 
-    public void deleteById(Long id){
-        postRepository.deleteById(id);
-    };
+    ;
+
+    public Post updatePost(Post post) {
+        return postRepository.update(post);
+    }
+
+    ;
+
+    public void deleteById(Long id) {
+        postRepository.delete(id);
+    }
+
+    ;
 }

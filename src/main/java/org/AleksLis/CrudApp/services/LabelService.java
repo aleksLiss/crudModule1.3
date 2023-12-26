@@ -17,14 +17,14 @@ public class LabelService {
     };
 
     public Label saveLabel(Label label){
-        return labelRepository.saveLabel(label);
+        return labelRepository.save(label);
     };
 
     public Label updateLabel(Label label){
-        return labelRepository.saveLabel(label);
+        return labelRepository.update(label);
     };
 
     public void deleteById(Long id){
-        labelRepository.deleteById(id);
+        labelRepository.delete(id);
     };
 }

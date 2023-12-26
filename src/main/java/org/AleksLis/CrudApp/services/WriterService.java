@@ -9,23 +9,33 @@ public class WriterService {
 
     private WriterRepository writerRepository;
 
-    public Writer getById(Long id){
+    public Writer getById(Long id) {
         return writerRepository.getById(id);
-    };
+    }
 
-    public List<Writer> getAll(){
+    ;
+
+    public List<Writer> getAll() {
         return writerRepository.getAll();
-    };
+    }
 
-    public Writer saveWriter(Writer writer){
-        return writerRepository.saveWriter(writer);
-    };
+    ;
 
-    public Writer updateWriter(Writer writer){
-        return writerRepository.updateWriter(writer);
-    };
+    public Writer saveWriter(Writer writer) {
+        return writerRepository.save(writer);
+    }
 
-    public void deleteWriter(Long id){
-        writerRepository.deleteWriter(id);
-    };
+    ;
+
+    public Writer updateWriter(Writer writer) {
+        return writerRepository.update(writer);
+    }
+
+    ;
+
+    public void deleteWriter(Long id) {
+        writerRepository.delete(id);
+    }
+
+    ;
 }
