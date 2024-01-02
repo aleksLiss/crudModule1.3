@@ -47,6 +47,11 @@ public class Util{
         }
     }
 
+    public static void idExist(Integer length) throws IdExistException{
+        if(length != 0){
+            throw new IdExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+        }
+    }
 
 
 
@@ -77,17 +82,6 @@ public class Util{
             throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
         }
     }
-
-    public static List<Writer> getListWritersFromJson(String jsonToString, Type type) {
-        List<Writer> listWriters;
-        if (jsonToString.length() == 0) {
-            listWriters = new ArrayList<>();
-        } else {
-            listWriters = new Gson().fromJson(jsonToString, type);
-        }
-        return listWriters;
-    }
-
     public static List<Post> getListPostsFromJson(String jsonToString, Type type) {
         List<Post> listPosts;
         if (jsonToString.length() == 0) {

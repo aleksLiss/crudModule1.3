@@ -31,7 +31,8 @@ public class WriterRepositoryImpl implements WriterRepository {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = Util.jsonToString(bufferedReader);
             try {
-                Type type = new TypeToken<List<Writer>>(){}.getType();
+                Type type = new TypeToken<List<Writer>>() {
+                }.getType();
                 List<Writer> listWriters = Util.getListWritersFromJson(fromJson, type);
                 Util.emptyDb(listWriters.size());
                 try {
@@ -40,8 +41,10 @@ public class WriterRepositoryImpl implements WriterRepository {
                             .collect(Collectors.toList());
                     Util.idNotExist(result.size());
                     writerFromDB = result.get(0);
-                } catch (IdNotExistException ignored) {}
-            } catch (EmptyDBException ignored) {}
+                } catch (IdNotExistException ignored) {
+                }
+            } catch (EmptyDBException ignored) {
+            }
         } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
@@ -55,10 +58,12 @@ public class WriterRepositoryImpl implements WriterRepository {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = Util.jsonToString(bufferedReader);
             try {
-                Type type = new TypeToken<List<Writer>>(){}.getType();
-                writersFromDB = Util.getListWritersFromJson(fromJson, type);
+                Type type = new TypeToken<List<Writer>>() {
+                }.getType();
+                writersFromDB = new Gson().fromJson(fromJson, type);
                 Util.emptyDb(writersFromDB.size());
-            } catch (EmptyDBException ignored) {}
+            } catch (EmptyDBException ignored) {
+            }
         } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
@@ -67,27 +72,31 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer save(Writer writer) {
-        Writer writerFromDB = null;
         String pathFile = Util.PATH + Util.WRITERDB;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = Util.jsonToString(bufferedReader);
+            Type type = new TypeToken<List<Writer>>() {}.getType();
+            List<Writer> listWriters = new Gson().fromJson(fromJson, type);
             try {
-                Type type = new TypeToken<List<Writer>>(){}.getType();
-                List<Writer> listWriters = Util.getListWritersFromJson(fromJson, type);
-                Util.emptyDb(listWriters.size());
-                try {
-                    List<Writer> result = listWriters.stream()
-                            .filter((writer) -> writer.getId().equals(id))
-                            .collect(Collectors.toList());
-                    Util.idNotExist(result.size());
-                    writerFromDB = result.get(0);
-                } catch (IdNotExistException ignored) {}
-            } catch (EmptyDBException ignored) {}
+                List<Writer> result = listWriters.stream()
+                        .filter((wr) -> wr.getId().equals(writer.getId()))
+                        .collect(Collectors.toList());
+                Util.idExist(result.size());
+                result.add(writer);
+                try (FileWriter fileWriter = new FileWriter(pathFile)) {
+                    String listWritersToJson = new Gson().toJson(result);
+                    fileWriter.write(listWritersToJson);
+                } catch (IOException e) {
+                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                }
+            } catch (IdExistException ignored) {
+            }
         } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
-        return writerFromDB;
+        return writer;
     }
+
 
     @Override
     public Writer update(Writer writer) {
