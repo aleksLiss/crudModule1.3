@@ -33,7 +33,7 @@ public class WriterRepositoryImpl implements WriterRepository {
             try {
                 Type type = new TypeToken<List<Writer>>() {
                 }.getType();
-                List<Writer> listWriters = Util.getListWritersFromJson(fromJson, type);
+                List<Writer> listWriters = new Gson().fromJson(fromJson, type);
                 Util.emptyDb(listWriters.size());
                 try {
                     List<Writer> result = listWriters.stream()
@@ -75,7 +75,8 @@ public class WriterRepositoryImpl implements WriterRepository {
         String pathFile = Util.PATH + Util.WRITERDB;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
             String fromJson = Util.jsonToString(bufferedReader);
-            Type type = new TypeToken<List<Writer>>() {}.getType();
+            Type type = new TypeToken<List<Writer>>() {
+            }.getType();
             List<Writer> listWriters = new Gson().fromJson(fromJson, type);
             try {
                 List<Writer> result = listWriters.stream()
@@ -100,64 +101,44 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public Writer update(Writer writer) {
-
-        String pathFile = WriterUtil.PATH + WriterUtil.WRITERDB;
+        Writer writerFromDB = null;
+        String pathFile = Util.PATH + Util.WRITERDB;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
-            String fromJson = WriterUtil.JsonToString(bufferedReader);
-            List<Writer> listWriters = WriterUtil.getListWritersFromJson(fromJson, WriterUtil.getTypeOfListWriters());
+            String fromJson = Util.jsonToString(bufferedReader);
             try {
-                WriterUtil.getWriterById(listWriters, writer.getId());
-                listWriters.stream()
-                        .peek((a) -> {
-                            if (a.getId().equals(writer.getId())) {
-                                a.setFirstName(writer.getFirstName());
-                                a.setLastName(writer.getLastName());
-                                a.setPosts(writer.getPosts());
-                                a.setWriterStatus(writer.getWriterStatus());
-                            }
-                        }).collect(Collectors.toList());
-                try (FileWriter fileWriter = new FileWriter(pathFile)) {
-                    String listWritersToJson = new Gson().toJson(listWriters);
-                    fileWriter.write(listWritersToJson);
-                } catch (IOException e) {
-                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                Type type = new TypeToken<List<Writer>>() {
+                }.getType();
+                List<Writer> listWriters = new Gson().fromJson(fromJson, type);
+                Util.emptyDb(listWriters.size());
+                try {
+                    List<Writer> result = listWriters.stream()
+                            .filter((wr) -> wr.getId().equals(writer.getId()))
+                            .collect(Collectors.toList());
+                    Util.idNotExist(result.size());
+                    writerFromDB = result.get(0);
+                    writerFromDB.setFirstName(writer.getFirstName());
+                    writerFromDB.setLastName(writer.getLastName());
+                    writerFromDB.setPosts(writer.getPosts());
+                    writerFromDB.setWriterStatus(writer.getWriterStatus());
+                    result.add(writerFromDB);
+                    try (FileWriter fileWriter = new FileWriter(pathFile)) {
+                        String listWritersToJson = new Gson().toJson(result);
+                        fileWriter.write(listWritersToJson);
+                    } catch (IOException e) {
+                        System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                    }
+                } catch (IdNotExistException ignored) {
                 }
-            } catch (IdNotExistException e) {
-                System.out.println(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+            } catch (EmptyDBException ignored) {
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
-        return writer;
-
-
+        return writerFromDB;
     }
 
     @Override
     public void delete(Long id) {
-        String pathFile = WriterUtil.PATH + WriterUtil.WRITERDB;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
-            String fromJson = util.JsonToString(bufferedReader);
-            List<Writer> listWriters = WriterUtil.getListWritersFromJson(fromJson, WriterUtil.getTypeOfListWriters());
-            try {
-                WriterUtil.getWriterById(listWriters, id);
-                listWriters.stream()
-                        .peek((a) -> {
-                            if (a.getId().equals(id)) {
-                                a.setWriterStatus(StatusEntity.DELETE);
-                            }
-                        }).collect(Collectors.toList());
-                try (FileWriter fileWriter = new FileWriter(pathFile)) {
-                    String listWritersToJson = new Gson().toJson(listWriters);
-                    fileWriter.write(listWritersToJson);
-                } catch (IOException e) {
-                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
-                }
-            } catch (IdNotExistException e) {
-                System.out.println(SystemMessages.ID_NOT_EXIST_EX.getMessage());
-            }
-        } catch (Exception e) {
-            System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
-        }
+
     }
 }
