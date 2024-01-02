@@ -139,6 +139,35 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public void delete(Long id) {
-
+        Writer writer = null;
+        String pathFile = Util.PATH + Util.WRITERDB;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
+            String fromJson = Util.jsonToString(bufferedReader);
+            try {
+                Type type = new TypeToken<List<Writer>>() {
+                }.getType();
+                List<Writer> listWriters = new Gson().fromJson(fromJson, type);
+                Util.emptyDb(listWriters.size());
+                try {
+                    List<Writer> result = listWriters.stream()
+                            .filter((wr) -> wr.getId().equals(writer.getId()))
+                            .collect(Collectors.toList());
+                    Util.idNotExist(result.size());
+                    Writer writerFromDB = result.get(0);
+                    writerFromDB.setWriterStatus(StatusEntity.DELETE);
+                    result.add(writerFromDB);
+                    try (FileWriter fileWriter = new FileWriter(pathFile)) {
+                        String listWritersToJson = new Gson().toJson(result);
+                        fileWriter.write(listWritersToJson);
+                    } catch (IOException e) {
+                        System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
+                    }
+                } catch (IdNotExistException ignored) {
+                }
+            } catch (EmptyDBException ignored) {
+            }
+        } catch (IOException e) {
+            System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
+        }
     }
 }
