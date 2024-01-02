@@ -50,39 +50,43 @@ public class WriterRepositoryImpl implements WriterRepository {
 
     @Override
     public List<Writer> getAll() {
-        String pathFile = WriterUtil.PATH + WriterUtil.WRITERDB;
-        List<Writer> listWriters = null;
+        List<Writer> writersFromDB = null;
+        String pathFile = Util.PATH + Util.WRITERDB;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
-            String fromJson = util.JsonToString(bufferedReader);
-            listWriters = WriterUtil.getListWritersFromJson(fromJson, WriterUtil.getTypeOfListWriters());
-        } catch (Exception e) {
+            String fromJson = Util.jsonToString(bufferedReader);
+            try {
+                Type type = new TypeToken<List<Writer>>(){}.getType();
+                writersFromDB = Util.getListWritersFromJson(fromJson, type);
+                Util.emptyDb(writersFromDB.size());
+            } catch (EmptyDBException ignored) {}
+        } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
-        return listWriters;
+        return writersFromDB;
     }
 
     @Override
     public Writer save(Writer writer) {
-        String pathFile = WriterUtil.PATH + WriterUtil.WRITERDB;
+        Writer writerFromDB = null;
+        String pathFile = Util.PATH + Util.WRITERDB;
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathFile))) {
-            String fromJson = WriterUtil.JsonToString(bufferedReader);
-            List<Writer> listWriters = WriterUtil.getListWritersFromJson(fromJson, WriterUtil.getTypeOfListWriters());
+            String fromJson = Util.jsonToString(bufferedReader);
             try {
-                WriterUtil.isIdExist(listWriters, writer.getId());
-                listWriters.add(writer);
-                try (FileWriter fileWriter = new FileWriter(pathFile)) {
-                    String listWritersToJson = new Gson().toJson(listWriters);
-                    fileWriter.write(listWritersToJson);
-                } catch (IOException e) {
-                    System.out.println(SystemMessages.WRITE_TO_JSON_EX.getMessage());
-                }
-            } catch (IdExistException e) {
-                System.out.println(SystemMessages.ID_ALREADY_EXIST.getMessage());
-            }
-        } catch (Exception e) {
+                Type type = new TypeToken<List<Writer>>(){}.getType();
+                List<Writer> listWriters = Util.getListWritersFromJson(fromJson, type);
+                Util.emptyDb(listWriters.size());
+                try {
+                    List<Writer> result = listWriters.stream()
+                            .filter((writer) -> writer.getId().equals(id))
+                            .collect(Collectors.toList());
+                    Util.idNotExist(result.size());
+                    writerFromDB = result.get(0);
+                } catch (IdNotExistException ignored) {}
+            } catch (EmptyDBException ignored) {}
+        } catch (IOException e) {
             System.out.println(SystemMessages.JSON_NOT_EXIST_EX.getMessage());
         }
-        return writer;
+        return writerFromDB;
     }
 
     @Override
