@@ -19,6 +19,6 @@ public class Post {
     private LocalDate created;
     private LocalDate updated;
     private List<Label> labels;
-
+    private StatusEntity postStatus;
 
 }

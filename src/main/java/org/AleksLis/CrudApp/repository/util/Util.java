@@ -52,7 +52,6 @@ public class Util{
             throw new IdExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
         }
     }
-
 };
 
 

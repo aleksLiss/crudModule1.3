@@ -144,6 +144,4 @@ public class WriterRepositoryImpl implements WriterRepository {
         }
         return fromJson;
     }
-
-
 }
