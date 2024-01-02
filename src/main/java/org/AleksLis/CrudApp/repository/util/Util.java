@@ -49,7 +49,7 @@ public class Util{
 
     public static void idExist(Integer length) throws IdExistException{
         if(length != 0){
-            throw new IdExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+            throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
         }
     }
 };
