@@ -1,13 +1,14 @@
 package org.AleksLis.CrudApp.services;
 
 import org.AleksLis.CrudApp.model.Writer;
+import org.AleksLis.CrudApp.repository.Implements.WriterRepositoryImpl;
 import org.AleksLis.CrudApp.repository.WriterRepository;
 
 import java.util.List;
 
 public class WriterService {
 
-    private WriterRepository writerRepository;
+    private WriterRepositoryImpl writerRepository;
 
     public Writer getById(Long id) {
         return writerRepository.getById(id);
