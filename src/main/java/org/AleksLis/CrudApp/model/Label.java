@@ -12,4 +12,5 @@ public class Label {
 
     private Long id;
     private String name;
+    private StatusEntity labelStatus;
 }
