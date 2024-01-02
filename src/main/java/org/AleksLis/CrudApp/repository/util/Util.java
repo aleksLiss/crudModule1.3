@@ -53,53 +53,6 @@ public class Util{
         }
     }
 
-
-
-
-
-    public Util() {
-    }
-
-
-
-
-
-    public static Writer getWriterById(List<Writer> listWriters, Long id) throws IdNotExistException {
-        List<Writer> result = listWriters.stream()
-                .filter((writer) -> writer.getId().equals(id))
-                .collect(Collectors.toList());
-        if (result.size() != 0) {
-            return result.get(0);
-        } else {
-            throw new idNotExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
-        }
-    }
-
-
-    public static void isIdExist(List<Writer> listWriters, Long id) throws IdExistException {
-        List<Writer> result = listWriters.stream()
-                .filter((writer) -> writer.getId().equals(id))
-                .collect(Collectors.toList());
-        if (result.size() != 0) {
-            throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
-        }
-    }
-    public static List<Post> getListPostsFromJson(String jsonToString, Type type) {
-        List<Post> listPosts;
-        if (jsonToString.length() == 0) {
-            listPosts = new ArrayList<>();
-        } else {
-            listPosts = new Gson().fromJson(jsonToString, type);
-        }
-        return listPosts;
-    }
-
-    public static <T> getEntity(List <T>){
-        try {
-
-        }catch ()
-    }
-
 };
 
 

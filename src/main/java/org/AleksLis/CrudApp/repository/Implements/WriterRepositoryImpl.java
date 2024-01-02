@@ -9,7 +9,6 @@ import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.WriterRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
-import org.AleksLis.CrudApp.repository.util.WriterUtil;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
 import java.io.BufferedReader;
@@ -21,9 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WriterRepositoryImpl implements WriterRepository {
-
-    private Util util;
-
     @Override
     public Writer getById(Long id) {
         Writer writerFromDB = null;
