@@ -9,7 +9,11 @@ public enum SystemMessages {
 
     WRITE_TO_JSON_EX("Write to json has not completed"),
 
-    EMPTY_DB_EX("Empty database")
+    EMPTY_DB_EX("Empty database"),
+
+    OPERATION_SUCCESS("Operation successes"),
+
+    OPERATION_FAILED("Operation failed")
 
     ;
     private String message;

@@ -23,7 +23,7 @@ public class Util{
     public static final String LABELDB = "labels.json";
 
     public static String jsonToString(BufferedReader bufferedReader){
-        String result= null;
+        String result = "";
         try {
             String current;
             while((current = bufferedReader.readLine()) != null){
@@ -53,5 +53,3 @@ public class Util{
         }
     }
 };
-
-

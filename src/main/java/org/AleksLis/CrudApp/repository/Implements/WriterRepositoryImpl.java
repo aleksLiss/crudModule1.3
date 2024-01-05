@@ -11,11 +11,9 @@ import org.AleksLis.CrudApp.repository.WriterRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,13 +49,28 @@ public class WriterRepositoryImpl implements WriterRepository {
     @Override
     public Writer save(Writer writer) {
         String pathFile = getPathFile();
-        List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
         try {
-            List<Writer> result = filterListWritersById(writer.getId(), listWriters);
-            Util.idExist(result.size());
-            result.add(writer);
-            writeListOfWritersToDB(pathFile, result);
-        } catch (IdExistException ignored) {
+            File file = new File(pathFile);
+            if (file.length() == 0) {
+                try {
+                    List<Writer> listWriters = new ArrayList<>();
+                    listWriters.add(writer);
+                    writeListOfWritersToDB(pathFile, listWriters);
+                } catch (Exception ignored) {
+                }
+            } else {
+                try {
+                    List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
+                    List<Writer> result = filterListWritersById(writer.getId(), listWriters);
+                    Util.idExist(result.size());
+                    result.add(writer);
+                    writeListOfWritersToDB(pathFile, result);
+                } catch (IdExistException ignored) {
+                    System.out.println(ignored.getMessage());
+                }
+            }
+        }catch(Exception e){
+            System.out.println(e.getMessage());
         }
         return writer;
     }
@@ -143,5 +156,12 @@ public class WriterRepositoryImpl implements WriterRepository {
             System.out.println(e.getMessage());
         }
         return fromJson;
+    }
+}
+
+
+class Test {
+    public static void main(String[] args) {
+
     }
 }

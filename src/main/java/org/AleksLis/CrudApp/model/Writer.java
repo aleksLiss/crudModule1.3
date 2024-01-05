@@ -1,14 +1,12 @@
 package org.AleksLis.CrudApp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 
-@AllArgsConstructor
 @Setter
 @Getter
 public class Writer {
@@ -18,4 +16,11 @@ public class Writer {
     private List<Post> posts;
     private StatusEntity writerStatus;
 
+    public Writer(Long id, String firstName, String lastName){
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.posts = new ArrayList<>();
+        this.writerStatus = StatusEntity.ACTIVE;
+    }
 }
