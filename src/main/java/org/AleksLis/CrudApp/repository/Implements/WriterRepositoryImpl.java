@@ -18,93 +18,74 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WriterRepositoryImpl implements WriterRepository {
+
     @Override
     public Writer getById(Long id) {
-        Writer writerFromDB = null;
+        Writer writer = null;
         try {
-            List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
-            Util.emptyDb(listWriters.size());
+            List<Writer> listWriters = getListWritersFromDB(getStringFromJson());
+            throwEmptyDb(listWriters);
             try {
-                List<Writer> result = filterListWritersById(id, listWriters);
-                Util.idNotExist(result.size());
-                writerFromDB = result.get(0);
-            } catch (IdNotExistException ignored) {
+                List<Writer> writers = throwIdNotExist(listWriters, id);
+                writer = writers.get(0);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return writerFromDB;
+        return writer;
     }
 
     @Override
     public List<Writer> getAll() {
         List<Writer> writersFromDB = null;
         try {
-            writersFromDB = getListWritersFromJsonString(getStringFromJson());
-            Util.emptyDb(writersFromDB.size());
-        } catch (EmptyDBException ignored) {
+            writersFromDB = getListWritersFromDB(getStringFromJson());
+            throwEmptyDb(writersFromDB);
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
         return writersFromDB;
     }
 
     @Override
     public Writer save(Writer writer) {
-        String pathFile = getPathFile();
         try {
+            String pathFile = getPathFile();
             File file = new File(pathFile);
             if (file.length() == 0) {
                 try {
                     List<Writer> listWriters = new ArrayList<>();
                     listWriters.add(writer);
                     writeListOfWritersToDB(pathFile, listWriters);
-                } catch (Exception ignored) {
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
             } else {
                 try {
-                    List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
-                    List<Writer> result = filterListWritersById(writer.getId(), listWriters);
-                    Util.idExist(result.size());
+                    List<Writer> listWriters = getListWritersFromDB(getStringFromJson());
+                    List<Writer> result = throwIdExist(listWriters, writer);
                     result.add(writer);
-                    writeListOfWritersToDB(pathFile, result);
-                } catch (IdExistException ignored) {
-                    System.out.println(ignored.getMessage());
+                    writeListOfWritersToDB(getPathFile(), result);
+                } catch (IdExistException ex) {
+                    System.out.println(ex.getMessage());
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return writer;
-    }
-
-
-    @Override
-    public Writer update(Writer writer) {
-        Writer writerFromDB = null;
-        String pathFile = getPathFile();
-        try {
-            List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
-            Util.emptyDb(listWriters.size());
-            try {
-                List<Writer> result = filterListWritersById(writer.getId(), listWriters);
-                Util.idNotExist(result.size());
-                writerFromDB = updateWriter(result.get(0), writer);
-                result.add(writerFromDB);
-                writeListOfWritersToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
-            }
-        } catch (EmptyDBException ignored) {
-        }
-        return writerFromDB;
     }
 
     @Override
     public void delete(Long id) {
         String pathFile = getPathFile();
         try {
-            List<Writer> listWriters = getListWritersFromJsonString(getStringFromJson());
-            Util.emptyDb(listWriters.size());
+            List<Writer> listWriters = getListWritersFromDB(getStringFromJson());
+            throwEmptyDb(listWriters);
             try {
-                List<Writer> result = filterListWritersById(id, listWriters);
-                Util.idNotExist(result.size());
+                List<Writer> result = throwIdNotExist(listWriters, id);
                 Writer writerFromDB = result.get(0);
                 writerFromDB.setWriterStatus(StatusEntity.DELETE);
                 result.add(writerFromDB);
@@ -115,24 +96,45 @@ public class WriterRepositoryImpl implements WriterRepository {
         }
     }
 
-    private List<Writer> filterListWritersById(Long id, List<Writer> writers) {
-        return writers.stream()
-                .filter((wr) -> wr.getId().equals(id))
-                .collect(Collectors.toList());
-    }
 
-    private List<Writer> getListWritersFromJsonString(String fromJson) {
+    @Override
+    public Writer update(Writer writer) {
+        Writer writerResult = null;
+        try {
+            List<Writer> listWriters = getListWritersFromDB(getStringFromJson());
+            throwEmptyDb(listWriters);
+            try {
+                List<Writer> filterWritersById = throwIdNotExist(listWriters, writer.getId());
+                filterWritersById.remove(0);
+                filterWritersById.add(writer);
+                writerResult = filterWritersById.get(0);
+                writeListOfWritersToDB(getPathFile(), filterWritersById);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
+            }
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return writerResult;
+    }
+    private List<Writer> getListWritersFromDB(String fromJson) {
         Type type = new TypeToken<List<Writer>>() {
         }.getType();
         return new Gson().fromJson(fromJson, type);
+
     }
 
-    private Writer updateWriter(Writer writerFromDB, Writer updateWriter) {
-        writerFromDB.setFirstName(updateWriter.getFirstName());
-        writerFromDB.setLastName(updateWriter.getLastName());
-        writerFromDB.setPosts(updateWriter.getPosts());
-        writerFromDB.setWriterStatus(updateWriter.getWriterStatus());
-        return updateWriter;
+    private String getPathFile() {
+        return Util.PATH + Util.WRITERDB;
+    }
+    private String getStringFromJson() {
+        String fromJson = null;
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(getPathFile()))) {
+            fromJson = Util.jsonToString(bufferedReader);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return fromJson;
     }
 
     private void writeListOfWritersToDB(String pathFile, List<Writer> writers) {
@@ -144,24 +146,29 @@ public class WriterRepositoryImpl implements WriterRepository {
         }
     }
 
-    private String getPathFile() {
-        return Util.PATH + Util.WRITERDB;
-    }
-
-    private String getStringFromJson() {
-        String fromJson = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(getPathFile()))) {
-            fromJson = Util.jsonToString(bufferedReader);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+    private static void throwEmptyDb(List<Writer> writers) throws EmptyDBException {
+        if (writers == null) {
+            throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
         }
-        return fromJson;
     }
-}
 
+    private static List<Writer> throwIdNotExist(List<Writer> writers, Long id) throws IdNotExistException {
+        List<Writer> result = writers.stream()
+                .filter((a) -> a.getId().equals(id))
+                .collect(Collectors.toList());
+        if (result.size() == 0) {
+            throw new IdNotExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+        }
+        return result;
+    }
 
-class Test {
-    public static void main(String[] args) {
-
+    private static List<Writer> throwIdExist(List<Writer> writers, Writer writer) throws IdExistException {
+        List<Writer> result = writers.stream()
+                .filter((a) -> a.getId().equals(writer.getId()))
+                .collect(Collectors.toList());
+        if (result.size() != 0) {
+            throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
+        }
+        return writers;
     }
 }

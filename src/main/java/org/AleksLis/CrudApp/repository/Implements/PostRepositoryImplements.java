@@ -26,10 +26,10 @@ public class PostRepositoryImplements implements PostRepository {
         Post postFromDB = null;
         try {
             List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            Util.emptyDb(listPosts.size());
+            emptyDb(listPosts);
             try {
                 List<Post> result = filterListPostsById(id, listPosts);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 postFromDB = result.get(0);
             } catch (IdNotExistException ignored) {
             }
@@ -43,7 +43,7 @@ public class PostRepositoryImplements implements PostRepository {
         List<Post> postFromDB = null;
         try {
             postFromDB = getListPostsFromJsonString(getStringFromJson());
-            Util.emptyDb(postFromDB.size());
+            emptyDb(postFromDB);
         } catch (EmptyDBException ignored) {
         }
         return postFromDB;
@@ -55,7 +55,7 @@ public class PostRepositoryImplements implements PostRepository {
         List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
         try {
             List<Post> result = filterListPostsById(post.getId(), listPosts);
-            Util.idExist(result.size());
+            Util.throwIdExist(result.size());
             result.add(post);
             writeListOfPostsToDB(pathFile, result);
         } catch (IdExistException ignored) {
@@ -70,10 +70,10 @@ public class PostRepositoryImplements implements PostRepository {
         String pathFile = getPathFile();
         try {
             List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            Util.emptyDb(listPosts.size());
+            emptyDb(listPosts);
             try {
                 List<Post> result = filterListPostsById(post.getId(), listPosts);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 postFromDB = updatePost(result.get(0), post);
                 result.add(post);
                 writeListOfPostsToDB(pathFile, result);
@@ -90,10 +90,10 @@ public class PostRepositoryImplements implements PostRepository {
         String pathFile = getPathFile();
         try {
             List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            Util.emptyDb(listPosts.size());
+            emptyDb(listPosts);
             try {
                 List<Post> result = filterListPostsById(id, listPosts);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 Post postFromDB = result.get(0);
                 postFromDB.setPostStatus(StatusEntity.DELETE);
                 result.add(postFromDB);
@@ -147,6 +147,11 @@ public class PostRepositoryImplements implements PostRepository {
         return fromJson;
     }
 
+    public static void emptyDb(List<Post> posts) throws EmptyDBException{
+        if(posts == null){
+            throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
+        }
+    }
 
 
 }

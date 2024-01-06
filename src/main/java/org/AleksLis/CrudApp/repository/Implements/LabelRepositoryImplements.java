@@ -7,7 +7,6 @@ import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
 import org.AleksLis.CrudApp.model.Label;
 import org.AleksLis.CrudApp.model.StatusEntity;
-import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.LabelRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
@@ -28,10 +27,10 @@ public class LabelRepositoryImplements implements LabelRepository {
         Label labelFromDB = null;
         try {
             List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            Util.emptyDb(listLabels.size());
+            emptyDb(listLabels);
             try {
                 List<Label> result = filterListLabelsById(id, listLabels);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 labelFromDB = result.get(0);
             } catch (IdNotExistException ignored) {
             }
@@ -46,7 +45,7 @@ public class LabelRepositoryImplements implements LabelRepository {
         List<Label> labelsFromDB = null;
         try {
             labelsFromDB = getListLabelsFromJsonString(getStringFromJson());
-            Util.emptyDb(labelsFromDB.size());
+            emptyDb(labelsFromDB);
         } catch (EmptyDBException ignored) {
         }
         return labelsFromDB;
@@ -59,7 +58,7 @@ public class LabelRepositoryImplements implements LabelRepository {
         List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
         try {
             List<Label> result = filterListLabelsById(label.getId(), listLabels);
-            Util.idExist(result.size());
+            Util.throwIdExist(result.size());
             result.add(label);
             writeListOfLabelsToDB(pathFile, result);
         } catch (IdExistException ignored) {
@@ -74,10 +73,10 @@ public class LabelRepositoryImplements implements LabelRepository {
         String pathFile = getPathFile();
         try {
             List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            Util.emptyDb(listLabels.size());
+            emptyDb(listLabels);
             try {
                 List<Label> result = filterListLabelsById(label.getId(), listLabels);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 labelFromDB = updateLabel(result.get(0), label);
                 result.add(labelFromDB);
                 writeListOfLabelsToDB(pathFile, result);
@@ -95,10 +94,10 @@ public class LabelRepositoryImplements implements LabelRepository {
         String pathFile = getPathFile();
         try {
             List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            Util.emptyDb(listLabels.size());
+            emptyDb(listLabels);
             try {
                 List<Label> result = filterListLabelsById(id, listLabels);
-                Util.idNotExist(result.size());
+                Util.throwIdNotExist(result.size());
                 Label labelFromDB = result.get(0);
                 labelFromDB.setLabelStatus(StatusEntity.DELETE);
                 result.add(labelFromDB);
@@ -152,4 +151,9 @@ public class LabelRepositoryImplements implements LabelRepository {
         return fromJson;
     }
 
+    private static void emptyDb(List<Label> labels) throws EmptyDBException{
+        if(labels == null){
+            throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
+        }
+    }
 }
