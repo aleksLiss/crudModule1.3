@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
+import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.WriterRepository;
@@ -86,13 +87,15 @@ public class WriterRepositoryImpl implements WriterRepository {
             throwEmptyDb(listWriters);
             try {
                 List<Writer> result = throwIdNotExist(listWriters, id);
-                Writer writerFromDB = result.get(0);
-                writerFromDB.setWriterStatus(StatusEntity.DELETE);
-                result.add(writerFromDB);
-                writeListOfWritersToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
+                List<Writer> res = result.stream()
+                        .peek(writer-> writer.setWriterStatus(StatusEntity.DELETE))
+                        .collect(Collectors.toList());
+                writeListOfWritersToDB(pathFile, res);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 

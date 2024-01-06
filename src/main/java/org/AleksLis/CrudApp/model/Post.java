@@ -1,16 +1,13 @@
 package org.AleksLis.CrudApp.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
-@AllArgsConstructor
 @Getter
 @Setter
 public class Post {
@@ -21,4 +18,12 @@ public class Post {
     private List<Label> labels;
     private StatusEntity postStatus;
 
+    public Post(Long id, String content) {
+        this.id = id;
+        this.content = content;
+        this.created = LocalDate.now();
+        this.updated = LocalDate.now();
+        this.labels = new ArrayList<>();
+        this.postStatus = StatusEntity.ACTIVE;
+    }
 }

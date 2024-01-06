@@ -7,15 +7,16 @@ import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
 import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
+import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.PostRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,105 +24,108 @@ public class PostRepositoryImplements implements PostRepository {
 
     @Override
     public Post getById(Long id) {
-        Post postFromDB = null;
+        Post post = null;
         try {
-            List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            emptyDb(listPosts);
+            List<Post> listPosts = getListPostsFromDB(getStringFromJson());
+            throwEmptyDb(listPosts);
             try {
-                List<Post> result = filterListPostsById(id, listPosts);
-                Util.throwIdNotExist(result.size());
-                postFromDB = result.get(0);
-            } catch (IdNotExistException ignored) {
+                List<Post> posts = throwIdNotExist(listPosts, id);
+                post = posts.get(0);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return postFromDB;
+        return post;
     }
 
     @Override
     public List<Post> getAll() {
-        List<Post> postFromDB = null;
+        List<Post> postsFromDB = null;
         try {
-            postFromDB = getListPostsFromJsonString(getStringFromJson());
-            emptyDb(postFromDB);
-        } catch (EmptyDBException ignored) {
+            postsFromDB = getListPostsFromDB(getStringFromJson());
+            throwEmptyDb(postsFromDB);
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return postFromDB;
+        return postsFromDB;
     }
 
     @Override
     public Post save(Post post) {
-        String pathFile = getPathFile();
-        List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
         try {
-            List<Post> result = filterListPostsById(post.getId(), listPosts);
-            Util.throwIdExist(result.size());
-            result.add(post);
-            writeListOfPostsToDB(pathFile, result);
-        } catch (IdExistException ignored) {
+            String pathFile = getPathFile();
+            File file = new File(pathFile);
+            if (file.length() == 0) {
+                try {
+                    List<Post> postList = new ArrayList<>();
+                    postList.add(post);
+                    writeListOfPostsToDB(pathFile, postList);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else {
+                try {
+                    List<Post> postsList = getListPostsFromDB(getStringFromJson());
+                    List<Post> result = throwIdExist(postsList, post);
+                    result.add(post);
+                    writeListOfPostsToDB(getPathFile(), result);
+                } catch (IdExistException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return post;
     }
 
     @Override
     public Post update(Post post) {
-
-        Post postFromDB = null;
-        String pathFile = getPathFile();
+        Post postResult = null;
         try {
-            List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            emptyDb(listPosts);
+            List<Post> postList = getListPostsFromDB(getStringFromJson());
+            throwEmptyDb(postList);
             try {
-                List<Post> result = filterListPostsById(post.getId(), listPosts);
-                Util.throwIdNotExist(result.size());
-                postFromDB = updatePost(result.get(0), post);
-                result.add(post);
-                writeListOfPostsToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
+                List<Post> filterPostsById = throwIdNotExist(postList, post.getId());
+                filterPostsById.remove(0);
+                filterPostsById.add(post);
+                postResult = filterPostsById.get(0);
+                writeListOfPostsToDB(getPathFile(), filterPostsById);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return postFromDB;
-
+        return postResult;
     }
 
     @Override
     public void delete(Long id) {
         String pathFile = getPathFile();
         try {
-            List<Post> listPosts = getListPostsFromJsonString(getStringFromJson());
-            emptyDb(listPosts);
+            List<Post> postList = getListPostsFromDB(getStringFromJson());
+            throwEmptyDb(postList);
             try {
-                List<Post> result = filterListPostsById(id, listPosts);
-                Util.throwIdNotExist(result.size());
-                Post postFromDB = result.get(0);
-                postFromDB.setPostStatus(StatusEntity.DELETE);
-                result.add(postFromDB);
-                writeListOfPostsToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
+                List<Post> result = throwIdNotExist(postList, id);
+                List<Post> res = result.stream()
+                        .peek(post-> post.setPostStatus(StatusEntity.DELETE))
+                        .collect(Collectors.toList());
+                writeListOfPostsToDB(pathFile, res);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 
-    private List<Post> filterListPostsById(Long id, List<Post> posts) {
-        return posts.stream()
-                .filter((ps) -> ps.getId().equals(id))
-                .collect(Collectors.toList());
-    }
-
-    private List<Post> getListPostsFromJsonString(String fromJson) {
+    private List<Post> getListPostsFromDB(String fromJson) {
         Type type = new TypeToken<List<Post>>() {
         }.getType();
         return new Gson().fromJson(fromJson, type);
-    }
-
-    private Post updatePost(Post postFromDB, Post updatePost) {
-        postFromDB.setContent(updatePost.getContent());
-        postFromDB.setLabels(updatePost.getLabels());
-        postFromDB.setCreated(updatePost.getCreated());
-        postFromDB.setUpdated(updatePost.getUpdated());
-        return updatePost;
     }
 
     private void writeListOfPostsToDB(String pathFile, List<Post> posts) {
@@ -134,7 +138,7 @@ public class PostRepositoryImplements implements PostRepository {
     }
 
     private String getPathFile() {
-        return Util.PATH + Util.WRITERDB;
+        return Util.PATH + Util.POSTDB;
     }
 
     private String getStringFromJson() {
@@ -147,11 +151,36 @@ public class PostRepositoryImplements implements PostRepository {
         return fromJson;
     }
 
-    public static void emptyDb(List<Post> posts) throws EmptyDBException{
+    public static void throwEmptyDb(List<Post> posts) throws EmptyDBException{
         if(posts == null){
             throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
         }
     }
 
+    private static List<Post> throwIdNotExist(List<Post> posts, Long id) throws IdNotExistException {
+        List<Post> result = posts.stream()
+                .filter((a) -> a.getId().equals(id))
+                .collect(Collectors.toList());
+        if (result.size() == 0) {
+            throw new IdNotExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+        }
+        return result;
+    }
 
+    private static List<Post> throwIdExist(List<Post> posts, Post post) throws IdExistException {
+        List<Post> result = posts.stream()
+                .filter((a) -> a.getId().equals(post.getId()))
+                .collect(Collectors.toList());
+        if (result.size() != 0) {
+            throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
+        }
+        return posts;
+    }
+}
+
+
+class Test{
+    public static void main(String[] args) {
+
+    }
 }

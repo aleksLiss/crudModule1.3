@@ -12,5 +12,12 @@
     "lastName": "Ninkina",
     "posts": [],
     "writerStatus": "ACTIVE"
+  },
+  {
+    "id": 3,
+    "firstName": "Giga",
+    "lastName": "Gigkina",
+    "posts": [],
+    "writerStatus": "ACTIVE"
   }
 ]
