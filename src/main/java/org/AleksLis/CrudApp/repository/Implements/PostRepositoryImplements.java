@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
+import org.AleksLis.CrudApp.model.Label;
 import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.model.Writer;
@@ -156,7 +157,6 @@ public class PostRepositoryImplements implements PostRepository {
             throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
         }
     }
-
     private static List<Post> throwIdNotExist(List<Post> posts, Long id) throws IdNotExistException {
         List<Post> result = posts.stream()
                 .filter((a) -> a.getId().equals(id))
@@ -176,6 +176,7 @@ public class PostRepositoryImplements implements PostRepository {
         }
         return posts;
     }
+
 }
 
 

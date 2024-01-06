@@ -6,16 +6,15 @@ import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
 import org.AleksLis.CrudApp.model.Label;
+import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.repository.LabelRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,29 +23,31 @@ public class LabelRepositoryImplements implements LabelRepository {
 
     @Override
     public Label getById(Long id) {
-        Label labelFromDB = null;
+        Label label = null;
         try {
-            List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            emptyDb(listLabels);
+            List<Label> labelList = getListLabelsFromDB(getStringFromJson());
+            throwEmptyDB(labelList);
             try {
-                List<Label> result = filterListLabelsById(id, listLabels);
-                Util.throwIdNotExist(result.size());
-                labelFromDB = result.get(0);
-            } catch (IdNotExistException ignored) {
+                List<Label> labels = throwIdNotExist(labelList, id);
+                label = labelList.get(0);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return labelFromDB;
+        return label;
 
     }
 
     @Override
-    public List getAll() {
+    public List<Label> getAll() {
         List<Label> labelsFromDB = null;
         try {
-            labelsFromDB = getListLabelsFromJsonString(getStringFromJson());
-            emptyDb(labelsFromDB);
-        } catch (EmptyDBException ignored) {
+            labelsFromDB = getListLabelsFromDB(getStringFromJson());
+            throwEmptyDB(labelsFromDB);
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
         return labelsFromDB;
 
@@ -54,78 +55,81 @@ public class LabelRepositoryImplements implements LabelRepository {
 
     @Override
     public Label save(Label label) {
-        String pathFile = getPathFile();
-        List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
         try {
-            List<Label> result = filterListLabelsById(label.getId(), listLabels);
-            Util.throwIdExist(result.size());
-            result.add(label);
-            writeListOfLabelsToDB(pathFile, result);
-        } catch (IdExistException ignored) {
+            String pathFile = getPathFile();
+            File file = new File(pathFile);
+            if (file.length() == 0) {
+                try {
+                    List<Label> labelList = new ArrayList<>();
+                    labelList.add(label);
+                    writeListOfLabelsToDB(pathFile, labelList);
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            } else {
+                try {
+                    List<Label> labelList = getListLabelsFromDB(getStringFromJson());
+                    List<Label> result = throwIdExist(labelList, label);
+                    result.add(label);
+                    writeListOfLabelsToDB(getPathFile(), result);
+                } catch (IdExistException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
         return label;
-
     }
 
     @Override
     public Label update(Label label) {
-        Label labelFromDB = null;
-        String pathFile = getPathFile();
+
+        Label labelResult = null;
         try {
-            List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            emptyDb(listLabels);
+            List<Label> labelList = getListLabelsFromDB(getStringFromJson());
+            throwEmptyDB(labelList);
             try {
-                List<Label> result = filterListLabelsById(label.getId(), listLabels);
-                Util.throwIdNotExist(result.size());
-                labelFromDB = updateLabel(result.get(0), label);
-                result.add(labelFromDB);
-                writeListOfLabelsToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
+                List<Label> filterLabelsById = throwIdNotExist(labelList, label.getId());
+                filterLabelsById.remove(0);
+                filterLabelsById.add(label);
+                labelResult = filterLabelsById.get(0);
+                writeListOfLabelsToDB(getPathFile(), filterLabelsById);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
-        return labelFromDB;
+        return labelResult;
 
     }
 
     @Override
     public void delete(Long id) {
-
         String pathFile = getPathFile();
         try {
-            List<Label> listLabels = getListLabelsFromJsonString(getStringFromJson());
-            emptyDb(listLabels);
+            List<Label> labelList = getListLabelsFromDB(getStringFromJson());
+            throwEmptyDB(labelList);
             try {
-                List<Label> result = filterListLabelsById(id, listLabels);
-                Util.throwIdNotExist(result.size());
-                Label labelFromDB = result.get(0);
-                labelFromDB.setLabelStatus(StatusEntity.DELETE);
-                result.add(labelFromDB);
-                writeListOfLabelsToDB(pathFile, result);
-            } catch (IdNotExistException ignored) {
+                List<Label> result = throwIdNotExist(labelList, id);
+                List<Label> res = result.stream()
+                        .peek(label-> label.setLabelStatus(StatusEntity.DELETE))
+                        .collect(Collectors.toList());
+                writeListOfLabelsToDB(pathFile, res);
+            } catch (IdNotExistException ex) {
+                System.out.println(ex.getMessage());
             }
-        } catch (EmptyDBException ignored) {
+        } catch (EmptyDBException ex) {
+            System.out.println(ex.getMessage());
         }
 
-
     }
 
-    private List<Label> filterListLabelsById(Long id, List<Label> labels) {
-        return labels.stream()
-                .filter((lb) -> lb.getId().equals(id))
-                .collect(Collectors.toList());
-    }
-
-    private List<Label> getListLabelsFromJsonString(String fromJson) {
+    private List<Label> getListLabelsFromDB(String fromJson) {
         Type type = new TypeToken<List<Label>>() {
         }.getType();
         return new Gson().fromJson(fromJson, type);
-    }
-
-    private Label updateLabel(Label labelFromDB, Label updateLabel) {
-        labelFromDB.setName(updateLabel.getName());
-        labelFromDB.setLabelStatus(updateLabel.getLabelStatus());
-        return updateLabel;
     }
 
     private void writeListOfLabelsToDB(String pathFile, List<Label> labels) {
@@ -138,7 +142,7 @@ public class LabelRepositoryImplements implements LabelRepository {
     }
 
     private String getPathFile() {
-        return Util.PATH + Util.WRITERDB;
+        return Util.PATH + Util.LABELDB;
     }
 
     private String getStringFromJson() {
@@ -151,9 +155,29 @@ public class LabelRepositoryImplements implements LabelRepository {
         return fromJson;
     }
 
-    private static void emptyDb(List<Label> labels) throws EmptyDBException{
+    private static void throwEmptyDB(List<Label> labels) throws EmptyDBException{
         if(labels == null){
             throw new EmptyDBException(SystemMessages.EMPTY_DB_EX.getMessage());
         }
+    }
+
+    private static List<Label> throwIdNotExist(List<Label> labels, Long id) throws IdNotExistException {
+        List<Label> result = labels.stream()
+                .filter((a) -> a.getId().equals(id))
+                .collect(Collectors.toList());
+        if (result.size() == 0) {
+            throw new IdNotExistException(SystemMessages.ID_NOT_EXIST_EX.getMessage());
+        }
+        return result;
+    }
+
+    private static List<Label> throwIdExist(List<Label> labels, Label label) throws IdExistException {
+        List<Label> result = labels.stream()
+                .filter((a) -> a.getId().equals(label.getId()))
+                .collect(Collectors.toList());
+        if (result.size() != 0) {
+            throw new IdExistException(SystemMessages.ID_ALREADY_EXIST.getMessage());
+        }
+        return labels;
     }
 }
