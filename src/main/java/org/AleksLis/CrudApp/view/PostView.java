@@ -10,17 +10,21 @@ import java.util.List;
 import java.util.Scanner;
 
 public class PostView {
-    private PostController postController;
+    private final PostController postController;
     public static final String INPUT_ID = "Input id: ";
     public static final String INPUT_CONTENT = "Input content: ";
     public static final String ACTION_ON_POSTS = "Choose action on posts: ";
     public static final String MENU =
             "1. Create new post\n" +
-            "2. Get post by id\n" +
-            "3. Get all posts\n" +
-            "4. Update post by id\n" +
-            "5. Delete post by id\n" +
-            "6. Exit\n";
+                    "2. Get post by id\n" +
+                    "3. Get all posts\n" +
+                    "4. Update post by id\n" +
+                    "5. Delete post by id\n" +
+                    "6. Exit\n";
+
+    public PostView() {
+        this.postController = new PostController();
+    }
 
     public void actionsOnPosts() {
         try {
@@ -111,7 +115,9 @@ public class PostView {
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 
     public void updatePost() {
         try {
@@ -126,7 +132,9 @@ public class PostView {
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 
     public void deletePost() {
         try {
@@ -137,5 +145,7 @@ public class PostView {
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 }

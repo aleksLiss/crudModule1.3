@@ -1,9 +1,7 @@
 package org.AleksLis.CrudApp.view;
 
 import org.AleksLis.CrudApp.controller.LabelController;
-import org.AleksLis.CrudApp.controller.PostController;
 import org.AleksLis.CrudApp.model.Label;
-import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
 import java.util.List;
@@ -11,7 +9,7 @@ import java.util.Scanner;
 
 public class LabelView {
 
-    private LabelController labelController;
+    private final LabelController labelController;
     public static final String INPUT_ID = "Input id: ";
     public static final String INPUT_NAME = "Input name: ";
     public static final String ACTION_ON_LABELS = "Choose action on labels: ";
@@ -22,6 +20,10 @@ public class LabelView {
                     "4. Update label by id\n" +
                     "5. Delete label by id\n" +
                     "6. Exit\n";
+
+    public LabelView() {
+        this.labelController = new LabelController();
+    }
 
     public void actionsOnLabels() {
         try {

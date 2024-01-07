@@ -9,11 +9,10 @@ import java.util.Scanner;
 
 public class WriterView {
 
-    private WriterController writerController;
+    private final WriterController writerController;
     public static final String INPUT_ID = "Input id: ";
     public static final String INPUT_FIRST_NAME = "Input first name: ";
     public static final String INPUT_LAST_NAME = "Input last name: ";
-
     public static final String ACTION_ON_WRITERS = "Choose action on writers: ";
     public static final String MENU = "Actions on writers:\n" +
             "1. Create new writer\n" +
@@ -23,8 +22,13 @@ public class WriterView {
             "5. Delete writer by id\n" +
             "6. Exit\n";
 
+    public WriterView() {
+        this.writerController = new WriterController();
+    }
+
     public void actionsOnWriters(){
         System.out.println(ACTION_ON_WRITERS);
+        System.out.println(MENU);
         int choose = new Scanner(System.in).nextInt();
         switch (choose){
             case 1:
@@ -122,5 +126,11 @@ public class WriterView {
         }catch (Exception e){
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
+    }
+}
+
+
+class Test2{
+    public static void main(String[] args) {
     }
 }
