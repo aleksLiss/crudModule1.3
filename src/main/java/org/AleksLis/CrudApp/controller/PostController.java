@@ -16,15 +16,15 @@ public class PostController {
         return postService.getAll();
     };
 
-    public Post saveLabel(Post post){
+    public Post savePost(Post post){
         return postService.savePost(post);
     };
 
-    public Post updateLabel(Post post){
+    public Post updatePost(Post post){
         return postService.updatePost(post);
     };
 
-    public void deleteById(Long id){
+    public void deletePost(Long id){
         postService.deleteById(id);
     };
 }
