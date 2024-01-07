@@ -7,7 +7,11 @@ import java.util.List;
 
 public class WriterController {
 
-    private WriterService writerService;
+    private final WriterService writerService;
+
+    public WriterController() {
+        this.writerService = new WriterService();
+    }
 
     public Writer getById(Long id){
         return writerService.getById(id);

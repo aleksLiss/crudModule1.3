@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class PostView {
     private final PostController postController;
+    private boolean STATUS_POST_VIEW;
     public static final String INPUT_ID = "Input id: ";
     public static final String INPUT_CONTENT = "Input content: ";
     public static final String ACTION_ON_POSTS = "Choose action on posts: ";
@@ -24,33 +25,46 @@ public class PostView {
 
     public PostView() {
         this.postController = new PostController();
+        this.STATUS_POST_VIEW = true;
+    }
+
+    private int startAction(){
+        System.out.println(MENU);
+        System.out.println(ACTION_ON_POSTS);
+        return new Scanner(System.in).nextInt();
     }
 
     public void actionsOnPosts() {
         try {
-            System.out.println(ACTION_ON_POSTS);
-            System.out.println(MENU);
-            int choose = new Scanner(System.in).nextInt();
-            switch (choose) {
-                case 1:
-                    savePost();
-                    break;
-                case 2:
-                    getPost();
-                    break;
-                case 3:
-                    getAllPosts();
-                    break;
-                case 4:
-                    updatePost();
-                    break;
-                case 5:
-                    deletePost();
-                    break;
-                case 6:
-                    break;
-                default:
-                    System.out.println(SystemMessages.OPERATION_FAILED);
+            int choose = startAction();
+            while (STATUS_POST_VIEW) {
+                switch (choose) {
+                    case 1:
+                        savePost();
+                        choose = startAction();
+                        break;
+                    case 2:
+                        getPost();
+                        choose = startAction();
+                        break;
+                    case 3:
+                        getAllPosts();
+                        choose = startAction();
+                        break;
+                    case 4:
+                        updatePost();
+                        choose = startAction();
+                        break;
+                    case 5:
+                        deletePost();
+                        choose = startAction();
+                        break;
+                    case 6:
+                        STATUS_POST_VIEW = false;
+                        break;
+                    default:
+                        System.out.println(SystemMessages.OPERATION_FAILED);
+                }
             }
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
@@ -111,7 +125,6 @@ public class PostView {
             System.out.println(INPUT_CONTENT);
             String content = new Scanner(System.in).next();
             postController.savePost(new Post(id, content));
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
@@ -128,7 +141,6 @@ public class PostView {
             String content = new Scanner(System.in).next();
             post.setContent(content);
             postController.updatePost(post);
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
@@ -141,7 +153,6 @@ public class PostView {
             System.out.println(INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             postController.deletePost(id);
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }

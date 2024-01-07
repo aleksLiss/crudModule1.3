@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 public class PostRepositoryImplements implements PostRepository {
 
+
     @Override
     public Post getById(Long id) {
         Post post = null;
@@ -177,11 +178,4 @@ public class PostRepositoryImplements implements PostRepository {
         return posts;
     }
 
-}
-
-
-class Test{
-    public static void main(String[] args) {
-
-    }
 }

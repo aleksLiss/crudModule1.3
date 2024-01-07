@@ -1,7 +1,10 @@
 package org.AleksLis;
 
+import org.AleksLis.CrudApp.view.Runner;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        Runner runner = new Runner();
+        runner.run();
     }
 }

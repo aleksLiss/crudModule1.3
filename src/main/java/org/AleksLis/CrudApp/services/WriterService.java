@@ -10,6 +10,10 @@ public class WriterService {
 
     private WriterRepositoryImpl writerRepository;
 
+    public WriterService() {
+        this.writerRepository = new WriterRepositoryImpl();
+    }
+
     public Writer getById(Long id) {
         return writerRepository.getById(id);
     }

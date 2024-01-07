@@ -1,6 +1,7 @@
 package org.AleksLis.CrudApp.services;
 
 import org.AleksLis.CrudApp.model.Post;
+import org.AleksLis.CrudApp.repository.Implements.PostRepositoryImplements;
 import org.AleksLis.CrudApp.repository.PostRepository;
 
 import java.util.List;
@@ -9,6 +10,9 @@ public class PostService {
 
     private PostRepository postRepository;
 
+    public PostService() {
+        this.postRepository = new PostRepositoryImplements();
+    }
 
     public Post getById(Long id) {
         return postRepository.getById(id);

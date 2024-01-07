@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class LabelView {
 
     private final LabelController labelController;
+    private boolean STATUS_LABEL_VIEW;
     public static final String INPUT_ID = "Input id: ";
     public static final String INPUT_NAME = "Input name: ";
     public static final String ACTION_ON_LABELS = "Choose action on labels: ";
@@ -23,33 +24,46 @@ public class LabelView {
 
     public LabelView() {
         this.labelController = new LabelController();
+        this.STATUS_LABEL_VIEW = true;
+    }
+
+    private int startAction(){
+        System.out.println(MENU);
+        System.out.println(ACTION_ON_LABELS);
+        return new Scanner(System.in).nextInt();
     }
 
     public void actionsOnLabels() {
         try {
-            System.out.println(ACTION_ON_LABELS);
-            System.out.println(MENU);
-            int choose = new Scanner(System.in).nextInt();
-            switch (choose) {
-                case 1:
-                    saveLabel();
-                    break;
-                case 2:
-                    getLabel();
-                    break;
-                case 3:
-                    getAllLabels();
-                    break;
-                case 4:
-                    updateLabel();
-                    break;
-                case 5:
-                    deleteLabel();
-                    break;
-                case 6:
-                    break;
-                default:
-                    System.out.println(SystemMessages.OPERATION_FAILED);
+            int choose = startAction();
+            while (STATUS_LABEL_VIEW) {
+                switch (choose) {
+                    case 1:
+                        saveLabel();
+                        choose = startAction();
+                        break;
+                    case 2:
+                        getLabel();
+                        choose = startAction();
+                        break;
+                    case 3:
+                        getAllLabels();
+                        choose = startAction();
+                        break;
+                    case 4:
+                        updateLabel();
+                        choose = startAction();
+                        break;
+                    case 5:
+                        deleteLabel();
+                        choose = startAction();
+                        break;
+                    case 6:
+                        STATUS_LABEL_VIEW = false;
+                        break;
+                    default:
+                        System.out.println(SystemMessages.OPERATION_FAILED);
+                }
             }
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
@@ -83,7 +97,9 @@ public class LabelView {
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 
     public void saveLabel() {
         try {
@@ -92,11 +108,12 @@ public class LabelView {
             System.out.println(INPUT_NAME);
             String name = new Scanner(System.in).next();
             labelController.saveLabel(new Label(id, name));
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 
     public void updateLabel() {
         try {
@@ -107,24 +124,22 @@ public class LabelView {
             String name = new Scanner(System.in).next();
             label.setName(name);
             labelController.updateLabel(label);
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
-    };
+    }
+
+    ;
 
     public void deleteLabel() {
         try {
             System.out.println(INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             labelController.deleteById(id);
-            System.out.println(SystemMessages.OPERATION_SUCCESS);
         } catch (Exception e) {
             System.out.println(SystemMessages.OPERATION_FAILED);
         }
     }
-
-
 
 
 }

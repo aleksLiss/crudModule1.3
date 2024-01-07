@@ -1,12 +1,17 @@
 package org.AleksLis.CrudApp.services;
 
 import org.AleksLis.CrudApp.model.Label;
+import org.AleksLis.CrudApp.repository.Implements.LabelRepositoryImplements;
 import org.AleksLis.CrudApp.repository.LabelRepository;
 
 import java.util.List;
 
 public class LabelService {
     private LabelRepository labelRepository;
+
+    public LabelService() {
+        this.labelRepository = new LabelRepositoryImplements();
+    }
 
     public Label getById(Long id){
         return labelRepository.getById(id);

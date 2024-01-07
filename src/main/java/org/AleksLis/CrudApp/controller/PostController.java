@@ -8,6 +8,11 @@ import java.util.List;
 public class PostController {
 
     private PostService postService;
+
+    public PostController() {
+        this.postService = new PostService();
+    }
+
     public Post getById(Long id){
         return postService.getById(id);
     };

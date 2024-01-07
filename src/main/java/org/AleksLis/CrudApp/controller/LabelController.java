@@ -8,6 +8,10 @@ import java.util.List;
 public class LabelController {
     private LabelService labelService;
 
+    public LabelController() {
+        this.labelService = new LabelService();
+    }
+
     public Label getById(Long id){
         return labelService.getById(id);
     };
