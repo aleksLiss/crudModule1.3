@@ -14,6 +14,7 @@ replay_pid*
 ## Maven
 ##############################
 target/
+/src/test/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -44,7 +45,7 @@ out/
 *.iml
 *.ipr
 *.iws
-
+/target/
 ##############################
 ## Eclipse
 ##############################
