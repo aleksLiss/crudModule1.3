@@ -7,8 +7,7 @@ import java.util.List;
 
 public class PostController {
 
-    private PostService postService;
-
+    private final PostService postService;
     public PostController() {
         this.postService = new PostService();
     }

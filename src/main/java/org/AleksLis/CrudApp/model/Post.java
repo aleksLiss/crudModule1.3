@@ -1,7 +1,8 @@
 package org.AleksLis.CrudApp.model;
 
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ public class Post {
     private LocalDate updated;
     private List<Label> labels;
     private StatusEntity postStatus;
-
     public Post(Long id, String content) {
         this.id = id;
         this.content = content;

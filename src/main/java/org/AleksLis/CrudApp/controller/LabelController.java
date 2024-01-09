@@ -6,8 +6,7 @@ import org.AleksLis.CrudApp.services.LabelService;
 import java.util.List;
 
 public class LabelController {
-    private LabelService labelService;
-
+    private final LabelService labelService;
     public LabelController() {
         this.labelService = new LabelService();
     }

@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
-import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.WriterRepository;
@@ -30,9 +29,11 @@ public class WriterRepositoryImpl implements WriterRepository {
                 List<Writer> writers = throwIdNotExist(listWriters, id);
                 writer = writers.get(0);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return writer;
@@ -45,6 +46,7 @@ public class WriterRepositoryImpl implements WriterRepository {
             writersFromDB = getListWritersFromDB(getStringFromJson());
             throwEmptyDb(writersFromDB);
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return writersFromDB;
@@ -60,7 +62,9 @@ public class WriterRepositoryImpl implements WriterRepository {
                     List<Writer> listWriters = new ArrayList<>();
                     listWriters.add(writer);
                     writeListOfWritersToDB(pathFile, listWriters);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (Exception ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             } else {
@@ -69,11 +73,14 @@ public class WriterRepositoryImpl implements WriterRepository {
                     List<Writer> result = throwIdExist(listWriters, writer);
                     result.add(writer);
                     writeListOfWritersToDB(getPathFile(), result);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (IdExistException ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             }
         } catch (Exception e) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(e.getMessage());
         }
         return writer;
@@ -91,10 +98,13 @@ public class WriterRepositoryImpl implements WriterRepository {
                         .peek(writer-> writer.setWriterStatus(StatusEntity.DELETE))
                         .collect(Collectors.toList());
                 writeListOfWritersToDB(pathFile, res);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
     }
@@ -112,10 +122,13 @@ public class WriterRepositoryImpl implements WriterRepository {
                 filterWritersById.add(writer);
                 writerResult = filterWritersById.get(0);
                 writeListOfWritersToDB(getPathFile(), filterWritersById);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return writerResult;

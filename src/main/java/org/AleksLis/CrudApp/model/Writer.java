@@ -1,6 +1,7 @@
 package org.AleksLis.CrudApp.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,6 @@ public class Writer {
     private String lastName;
     private List<Post> posts;
     private StatusEntity writerStatus;
-
     public Writer(Long id, String firstName, String lastName){
         this.id = id;
         this.firstName = firstName;

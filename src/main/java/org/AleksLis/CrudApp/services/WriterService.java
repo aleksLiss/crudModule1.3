@@ -2,13 +2,12 @@ package org.AleksLis.CrudApp.services;
 
 import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.Implements.WriterRepositoryImpl;
-import org.AleksLis.CrudApp.repository.WriterRepository;
 
 import java.util.List;
 
 public class WriterService {
 
-    private WriterRepositoryImpl writerRepository;
+    private final WriterRepositoryImpl writerRepository;
 
     public WriterService() {
         this.writerRepository = new WriterRepositoryImpl();

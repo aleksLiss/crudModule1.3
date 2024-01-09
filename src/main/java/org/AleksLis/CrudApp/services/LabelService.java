@@ -7,7 +7,7 @@ import org.AleksLis.CrudApp.repository.LabelRepository;
 import java.util.List;
 
 public class LabelService {
-    private LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
     public LabelService() {
         this.labelRepository = new LabelRepositoryImplements();

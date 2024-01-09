@@ -6,7 +6,6 @@ import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
 import org.AleksLis.CrudApp.model.Label;
-import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
 import org.AleksLis.CrudApp.repository.LabelRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
@@ -29,11 +28,13 @@ public class LabelRepositoryImplements implements LabelRepository {
             throwEmptyDB(labelList);
             try {
                 List<Label> labels = throwIdNotExist(labelList, id);
-                label = labelList.get(0);
+                label = labels.get(0);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return label;
@@ -47,6 +48,7 @@ public class LabelRepositoryImplements implements LabelRepository {
             labelsFromDB = getListLabelsFromDB(getStringFromJson());
             throwEmptyDB(labelsFromDB);
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return labelsFromDB;
@@ -63,7 +65,9 @@ public class LabelRepositoryImplements implements LabelRepository {
                     List<Label> labelList = new ArrayList<>();
                     labelList.add(label);
                     writeListOfLabelsToDB(pathFile, labelList);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (Exception ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             } else {
@@ -72,11 +76,14 @@ public class LabelRepositoryImplements implements LabelRepository {
                     List<Label> result = throwIdExist(labelList, label);
                     result.add(label);
                     writeListOfLabelsToDB(getPathFile(), result);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (IdExistException ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             }
         } catch (Exception e) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(e.getMessage());
         }
         return label;
@@ -95,10 +102,13 @@ public class LabelRepositoryImplements implements LabelRepository {
                 filterLabelsById.add(label);
                 labelResult = filterLabelsById.get(0);
                 writeListOfLabelsToDB(getPathFile(), filterLabelsById);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return labelResult;
@@ -117,10 +127,13 @@ public class LabelRepositoryImplements implements LabelRepository {
                         .peek(label-> label.setLabelStatus(StatusEntity.DELETE))
                         .collect(Collectors.toList());
                 writeListOfLabelsToDB(pathFile, res);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
 

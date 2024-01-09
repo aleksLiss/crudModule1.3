@@ -1,7 +1,6 @@
 package org.AleksLis.CrudApp.view;
 
 import org.AleksLis.CrudApp.controller.PostController;
-import org.AleksLis.CrudApp.controller.WriterController;
 import org.AleksLis.CrudApp.model.Label;
 import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
@@ -11,33 +10,23 @@ import java.util.Scanner;
 
 public class PostView {
     private final PostController postController;
-    private boolean STATUS_POST_VIEW;
-    public static final String INPUT_ID = "Input id: ";
-    public static final String INPUT_CONTENT = "Input content: ";
-    public static final String ACTION_ON_POSTS = "Choose action on posts: ";
-    public static final String MENU =
-            "1. Create new post\n" +
-                    "2. Get post by id\n" +
-                    "3. Get all posts\n" +
-                    "4. Update post by id\n" +
-                    "5. Delete post by id\n" +
-                    "6. Exit\n";
+    private boolean statusPostView;
 
     public PostView() {
         this.postController = new PostController();
-        this.STATUS_POST_VIEW = true;
+        this.statusPostView = true;
     }
 
     private int startAction(){
-        System.out.println(MENU);
-        System.out.println(ACTION_ON_POSTS);
+        System.out.println(SystemMessages.MENU_POST_VIEW);
+        System.out.println(SystemMessages.INPUT_CHOOSE);
         return new Scanner(System.in).nextInt();
     }
 
     public void actionsOnPosts() {
         try {
             int choose = startAction();
-            while (STATUS_POST_VIEW) {
+            while (statusPostView) {
                 switch (choose) {
                     case 1:
                         savePost();
@@ -60,7 +49,7 @@ public class PostView {
                         choose = startAction();
                         break;
                     case 6:
-                        STATUS_POST_VIEW = false;
+                        statusPostView = false;
                         break;
                     default:
                         System.out.println(SystemMessages.OPERATION_FAILED);
@@ -74,7 +63,7 @@ public class PostView {
 
     public void getPost() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             Post post = postController.getById(id);
             System.out.println("Id: " + post.getId());
@@ -120,9 +109,9 @@ public class PostView {
 
     public void savePost() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
-            System.out.println(INPUT_CONTENT);
+            System.out.println(SystemMessages.INPUT_CONTENT);
             String content = new Scanner(System.in).next();
             postController.savePost(new Post(id, content));
         } catch (Exception e) {
@@ -134,10 +123,10 @@ public class PostView {
 
     public void updatePost() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             Post post = postController.getById(id);
-            System.out.println(INPUT_CONTENT);
+            System.out.println(SystemMessages.INPUT_CONTENT);
             String content = new Scanner(System.in).next();
             post.setContent(content);
             postController.updatePost(post);
@@ -150,7 +139,7 @@ public class PostView {
 
     public void deletePost() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             postController.deletePost(id);
         } catch (Exception e) {

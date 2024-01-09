@@ -10,33 +10,23 @@ import java.util.Scanner;
 public class LabelView {
 
     private final LabelController labelController;
-    private boolean STATUS_LABEL_VIEW;
-    public static final String INPUT_ID = "Input id: ";
-    public static final String INPUT_NAME = "Input name: ";
-    public static final String ACTION_ON_LABELS = "Choose action on labels: ";
-    public static final String MENU =
-            "1. Create new label\n" +
-                    "2. Get label by id\n" +
-                    "3. Get all labels\n" +
-                    "4. Update label by id\n" +
-                    "5. Delete label by id\n" +
-                    "6. Exit\n";
+    private boolean statusLabelView;
 
     public LabelView() {
         this.labelController = new LabelController();
-        this.STATUS_LABEL_VIEW = true;
+        this.statusLabelView = true;
     }
 
     private int startAction(){
-        System.out.println(MENU);
-        System.out.println(ACTION_ON_LABELS);
+        System.out.println(SystemMessages.MENU_LABEL_VIEW);
+        System.out.println(SystemMessages.INPUT_CHOOSE);
         return new Scanner(System.in).nextInt();
     }
 
     public void actionsOnLabels() {
         try {
             int choose = startAction();
-            while (STATUS_LABEL_VIEW) {
+            while (statusLabelView) {
                 switch (choose) {
                     case 1:
                         saveLabel();
@@ -59,7 +49,7 @@ public class LabelView {
                         choose = startAction();
                         break;
                     case 6:
-                        STATUS_LABEL_VIEW = false;
+                        statusLabelView = false;
                         break;
                     default:
                         System.out.println(SystemMessages.OPERATION_FAILED);
@@ -73,7 +63,7 @@ public class LabelView {
 
     public void getLabel() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             Label label = labelController.getById(id);
             System.out.println("Id: " + label.getId());
@@ -103,9 +93,9 @@ public class LabelView {
 
     public void saveLabel() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
-            System.out.println(INPUT_NAME);
+            System.out.println(SystemMessages.INPUT_NAME);
             String name = new Scanner(System.in).next();
             labelController.saveLabel(new Label(id, name));
         } catch (Exception e) {
@@ -117,10 +107,10 @@ public class LabelView {
 
     public void updateLabel() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             Label label = labelController.getById(id);
-            System.out.println(INPUT_NAME);
+            System.out.println(SystemMessages.INPUT_NAME);
             String name = new Scanner(System.in).next();
             label.setName(name);
             labelController.updateLabel(label);
@@ -133,7 +123,7 @@ public class LabelView {
 
     public void deleteLabel() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             labelController.deleteById(id);
         } catch (Exception e) {

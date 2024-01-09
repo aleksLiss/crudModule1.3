@@ -5,19 +5,15 @@ import com.google.gson.reflect.TypeToken;
 import org.AleksLis.CrudApp.exceptions.EmptyDBException;
 import org.AleksLis.CrudApp.exceptions.IdExistException;
 import org.AleksLis.CrudApp.exceptions.IdNotExistException;
-import org.AleksLis.CrudApp.model.Label;
 import org.AleksLis.CrudApp.model.Post;
 import org.AleksLis.CrudApp.model.StatusEntity;
-import org.AleksLis.CrudApp.model.Writer;
 import org.AleksLis.CrudApp.repository.PostRepository;
 import org.AleksLis.CrudApp.repository.util.Util;
 import org.AleksLis.CrudApp.systemMessages.SystemMessages;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,9 +30,11 @@ public class PostRepositoryImplements implements PostRepository {
                 List<Post> posts = throwIdNotExist(listPosts, id);
                 post = posts.get(0);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return post;
@@ -49,6 +47,7 @@ public class PostRepositoryImplements implements PostRepository {
             postsFromDB = getListPostsFromDB(getStringFromJson());
             throwEmptyDb(postsFromDB);
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return postsFromDB;
@@ -64,7 +63,9 @@ public class PostRepositoryImplements implements PostRepository {
                     List<Post> postList = new ArrayList<>();
                     postList.add(post);
                     writeListOfPostsToDB(pathFile, postList);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (Exception ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             } else {
@@ -73,11 +74,14 @@ public class PostRepositoryImplements implements PostRepository {
                     List<Post> result = throwIdExist(postsList, post);
                     result.add(post);
                     writeListOfPostsToDB(getPathFile(), result);
+                    System.out.println(SystemMessages.OPERATION_SUCCESS);
                 } catch (IdExistException ex) {
+                    System.out.println(SystemMessages.OPERATION_FAILED);
                     System.out.println(ex.getMessage());
                 }
             }
         } catch (Exception e) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(e.getMessage());
         }
         return post;
@@ -95,10 +99,13 @@ public class PostRepositoryImplements implements PostRepository {
                 filterPostsById.add(post);
                 postResult = filterPostsById.get(0);
                 writeListOfPostsToDB(getPathFile(), filterPostsById);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
         return postResult;
@@ -116,10 +123,13 @@ public class PostRepositoryImplements implements PostRepository {
                         .peek(post-> post.setPostStatus(StatusEntity.DELETE))
                         .collect(Collectors.toList());
                 writeListOfPostsToDB(pathFile, res);
+                System.out.println(SystemMessages.OPERATION_SUCCESS);
             } catch (IdNotExistException ex) {
+                System.out.println(SystemMessages.OPERATION_FAILED);
                 System.out.println(ex.getMessage());
             }
         } catch (EmptyDBException ex) {
+            System.out.println(SystemMessages.OPERATION_FAILED);
             System.out.println(ex.getMessage());
         }
     }

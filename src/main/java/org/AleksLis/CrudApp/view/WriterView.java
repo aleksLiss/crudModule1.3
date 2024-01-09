@@ -10,33 +10,19 @@ import java.util.Scanner;
 public class WriterView {
 
     private final WriterController writerController;
-    public boolean STATUS_WRITER_VEW;
-    public static final String INPUT_ID = "Input id: ";
-    public static final String INPUT_FIRST_NAME = "Input first name: ";
-    public static final String INPUT_LAST_NAME = "Input last name: ";
-    public static final String ACTION_ON_WRITERS = "Choose action on writers: ";
-    public static final String MENU = "Actions on writers:\n" +
-            "1. Create new writer\n" +
-            "2. Get writer by id\n" +
-            "3. Get all writers\n" +
-            "4. Update writer by id\n" +
-            "5. Delete writer by id\n" +
-            "6. Exit\n";
-
+    public boolean statusWriterView;
     public WriterView() {
         this.writerController = new WriterController();
-        this.STATUS_WRITER_VEW = true;
+        this.statusWriterView = true;
     }
-
     private int startAction(){
-        System.out.println(MENU);
-        System.out.println(ACTION_ON_WRITERS);
+        System.out.println(SystemMessages.MENU_WRITER_VIEW);
+        System.out.println(SystemMessages.INPUT_CHOOSE);
         return new Scanner(System.in).nextInt();
     }
-
     public void actionsOnWriters() {
         int choose = startAction();
-        while (STATUS_WRITER_VEW) {
+        while (statusWriterView) {
             switch (choose) {
                 case 1:
                     saveWriter();
@@ -59,7 +45,7 @@ public class WriterView {
                     choose = startAction();
                     break;
                 case 6:
-                    STATUS_WRITER_VEW = false;
+                    statusWriterView = false;
                     break;
                 default:
                     System.out.println(SystemMessages.OPERATION_FAILED);
@@ -70,11 +56,11 @@ public class WriterView {
 
     public void saveWriter() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
-            System.out.println(INPUT_FIRST_NAME);
+            System.out.println(SystemMessages.INPUT_FIRST_NAME);
             String firstName = new Scanner(System.in).next();
-            System.out.println(INPUT_LAST_NAME);
+            System.out.println(SystemMessages.INPUT_LAST_NAME);
             String lastName = new Scanner(System.in).next();
             writerController.saveWriter(new Writer(id, firstName, lastName));
         } catch (Exception e) {
@@ -84,7 +70,7 @@ public class WriterView {
 
     public void getWriter() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             Long id = (long) new Scanner(System.in).nextInt();
             Writer writerFromDB = writerController.getById(id);
             System.out.println("Id: " + writerFromDB.getId());
@@ -111,13 +97,13 @@ public class WriterView {
     public void updateWriter() {
         try {
 
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             Writer writer = writerController.getById(id);
 
-            System.out.println(INPUT_FIRST_NAME);
+            System.out.println(SystemMessages.INPUT_FIRST_NAME);
             String firstName = new Scanner(System.in).next();
-            System.out.println(INPUT_LAST_NAME);
+            System.out.println(SystemMessages.INPUT_LAST_NAME);
             String lastName = new Scanner(System.in).next();
 
             writer.setFirstName(firstName);
@@ -131,7 +117,7 @@ public class WriterView {
 
     public void deleteWriter() {
         try {
-            System.out.println(INPUT_ID);
+            System.out.println(SystemMessages.INPUT_ID);
             long id = new Scanner(System.in).nextInt();
             writerController.deleteWriter(id);
         } catch (Exception e) {
